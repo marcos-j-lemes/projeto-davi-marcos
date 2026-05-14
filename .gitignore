@@ -1,0 +1,18 @@
+/mysql-data
+
+
+# db
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+/db/
+/data/
+/mysql/
+/var/lib/mysql/
+# node_modules
+
+/node_modules/
+/mysql-data/
+# Logs
+demo/mysql-data/
