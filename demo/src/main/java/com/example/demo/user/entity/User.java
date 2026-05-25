@@ -7,6 +7,7 @@ import java.util.List;
 
 //import com.marcos.ecommerce.product.entity.Product;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.demo.auth.entity.Role;
 
 @Entity
 @Table(name = "usuario")
@@ -27,6 +28,13 @@ public class User {
 
     @Column(nullable = false, length = 255)
     private String password;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
+
+    @Column(nullable = false)
+    private Boolean ativo = true;
 
     // @OneToMany(mappedBy = "usuario")
     // @JsonIgnore

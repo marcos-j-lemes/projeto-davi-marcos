@@ -21,7 +21,7 @@ import com.example.demo.user.dto.CreateUserRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping({"/users", "/users/auth/api"})
 public class ControlUser {
 
     @Autowired
