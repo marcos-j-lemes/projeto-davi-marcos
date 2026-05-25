@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Usuários</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-delete {
+            background: #ff4757;
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.9em;
+        }
+
+        .btn-delete:hover {
+            background: #ff3838;
+        }
+
+        .btn-edit {
+            background: #ffa502;
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.9em;
+        }
+
+        .btn-edit:hover {
+            background: #ff8c00;
+        }
+
+        .users-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .users-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .users-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .user-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .user-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-info h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            color: #666;
+            font-size: 0.9em;
+            margin: 3px 0;
+        }
+
+        .user-id {
+            color: #999;
+            font-size: 0.8em;
+            font-style: italic;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .user-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-actions {
+                width: 100%;
+                margin-top: 15px;
+            }
+
+            .user-actions button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>👥 Gerenciador de Usuários</h1>
+            <p>Gerencie seus usuários com facilidade</p>
+        </header>
+
+        <div class="content">
+            <!-- Formulário -->
+            <div class="form-section">
+                <h2>Novo Usuário</h2>
+                <div id="message" class="message"></div>
+
+                <form id="userForm">
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" id="nome" required placeholder="Digite o nome">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required placeholder="Digite o email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Senha</label>
+                        <input type="password" id="password" required placeholder="Digite a senha">
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-save" id="submitBtn">Criar Usuário</button>
+                        <button type="button" class="btn-cancel" id="cancelBtn" style="display: none;">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Lista de Usuários -->
+            <div class="users-section">
+                <h2>Usuários Cadastrados</h2>
+                <div id="usersList" class="users-list">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Carregando usuários...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080';
+        const USERS_ENDPOINT = '/users';
+
+        let editingUserId = null;
+        let allUsers = [];
+
+        // Elementos do DOM
+        const userForm = document.getElementById('userForm');
+        const nomeInput = document.getElementById('nome');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const usersList = document.getElementById('usersList');
+        const messageDiv = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUsers();
+            userForm.addEventListener('submit', handleSubmit);
+            cancelBtn.addEventListener('click', resetForm);
+        });
+
+        // Mostrar mensagem
+        function showMessage(message, type) {
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            setTimeout(() => {
+                messageDiv.className = 'message';
+            }, 4000);
+        }
+
+        // Carregar usuários
+        async function loadUsers() {
+            try {
+                usersList.innerHTML = '<div class="loading"><div class="spinner"></div><p>Carregando usuários...</p></div>';
+                
+                const response = await fetch(`${API_BASE_URL}${USERS_ENDPOINT}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro ${response.status}: ${response.statusText}`);
+                }
+
+                allUsers = await response.json();
+                displayUsers();
+            } catch (error) {
+                console.error('Erro ao carregar usuários:', error);
+                usersList.innerHTML = `
+                    <div class="empty-state">
+                        <p>⚠️ Erro ao carregar usuários</p>
+                        <p>${error.message}</p>
+                        <p style="font-size: 0.9em; margin-top: 10px;">Verifique se a API está rodando em ${API_BASE_URL}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Exibir usuários
+        function displayUsers() {
+            if (allUsers.length === 0) {
+                usersList.innerHTML = `
+                    <div class="empty-state">
+                        <p>📭 Nenhum usuário cadastrado</p>
+                        <p>Crie um novo usuário para começar!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            usersList.innerHTML = allUsers.map(user => `
+                <div class="user-card">
+                    <div class="user-info">
+                        <h3>${user.nome}</h3>
+                        <p>📧 ${user.email}</p>
+                        <p class="user-id">#${user.id}</p>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn-edit" onclick="editUser(${user.id})">Editar</button>
+                        <button class="btn-delete" onclick="deleteUser(${user.id})">Deletar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Criar/Atualizar usuário
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            const userData = {
+                nome: nomeInput.value.trim(),
+                email: emailInput.value.trim(),
+                password: passwordInput.value
+            };
+
+            if (!userData.nome || !userData.email || !userData.password) {
+                showMessage('Por favor, preencha todos os campos', 'error');
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Carregando...';
+
+                // Incluir ID se for edição
+                if (editingUserId) {
+                    userData.id = editingUserId;
+                }
+
+                const response = await fetch(`${API_BASE_URL}${USERS_ENDPOINT}`, {
+                    method: editingUserId ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                showMessage(
+                    editingUserId ? '✅ Usuário atualizado com sucesso!' : '✅ Usuário criado com sucesso!',
+                    'success'
+                );
+
+                resetForm();
+                loadUsers();
+            } catch (error) {
+                console.error('Erro ao salvar usuário:', error);
+                showMessage(`❌ Erro ao salvar: ${error.message}`, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = editingUserId ? 'Atualizar' : 'Criar Usuário';
+            }
+        }
+
+        // Editar usuário
+        async function editUser(userId) {
+            try {
+                const user = allUsers.find(u => u.id === userId);
+                if (!user) {
+                    showMessage('Usuário não encontrado', 'error');
+                    return;
+                }
+
+                editingUserId = userId;
+                nomeInput.value = user.nome;
+                emailInput.value = user.email;
+                passwordInput.value = user.password;
+
+                submitBtn.textContent = 'Atualizar';
+                cancelBtn.style.display = 'block';
+
+                nomeInput.focus();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                console.error('Erro ao editar usuário:', error);
+                showMessage('Erro ao carregar usuário', 'error');
+            }
+        }
+
+        // Deletar usuário
+        async function deleteUser(userId) {
+            if (!confirm('Tem certeza que deseja deletar este usuário?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}${USERS_ENDPOINT}/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro ${response.status}: ${response.statusText}`);
+                }
+
+                showMessage('✅ Usuário deletado com sucesso!', 'success');
+                loadUsers();
+            } catch (error) {
+                console.error('Erro ao deletar usuário:', error);
+                showMessage(`❌ Erro ao deletar: ${error.message}`, 'error');
+            }
+        }
+
+        // Resetar formulário
+        function resetForm() {
+            userForm.reset();
+            editingUserId = null;
+            submitBtn.textContent = 'Criar Usuário';
+            cancelBtn.style.display = 'none';
+            messageDiv.className = 'message';
+        }
+
+        // Auto-reload a cada 30 segundos
+        setInterval(loadUsers, 30000);
+    </script>
+</body>
+</html>

@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class User {
 
     @Id

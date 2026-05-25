@@ -25,6 +25,37 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public java.util.List<User> getAll() {
+        // Lógica para obter todos os usuários
+        return userRepository.findAll();
+    }
+
+    public User getById(Long id) {
+        // Lógica para obter um usuário por ID
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public User update(Long id, User user) {
+        // Lógica para atualizar um usuário
+        User existingUser = userRepository.findById(id).orElse(null);
+        if (existingUser != null) {
+            existingUser.setEmail(user.getEmail());
+            existingUser.setNome(user.getNome());
+            existingUser.setPassword(user.getPassword());
+            return userRepository.save(existingUser);
+        }
+        return null;
+    }
+
+
+    public void delete(Long id) {
+        // Lógica para deletar um usuário
+        userRepository.deleteById(id);
+    }
+
+    
+
+
 }
 
 

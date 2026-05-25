@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.http.ResponseEntity;
 
 import com.example.demo.user.entity.User;
@@ -36,6 +37,27 @@ public class ControlUser {
     public ResponseEntity<User> add(@Valid @RequestBody User user) {
         User savedUser = userservice.add(user);
         return ResponseEntity.ok(savedUser);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<User>> getAll() {
+        return ResponseEntity.ok(userservice.getAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(userservice.getById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> update(@PathVariable Long id, @Valid @RequestBody User user) {
+        return ResponseEntity.ok(userservice.update(id, user));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        userservice.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
